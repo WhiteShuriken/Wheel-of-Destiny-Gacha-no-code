@@ -1,4 +1,4 @@
-let coins = 5000;
+let coins = 5000000;
 const collectedCharacters = {};
 
 const rarityWeights = {
