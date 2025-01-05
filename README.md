@@ -45,7 +45,7 @@ Wheel-of-Destiny-Gacha/
 ## Instructions pour l'utilisation
 1. **Cloner le projet** :
    ```bash
-   git clone <URL-du-dépôt>
+   git clone https://github.com/WhiteShuriken/Wheel-of-Destiny-Gacha-no-code
    ```
 2. **Ouvrir le fichier `index.html` dans un navigateur**.
 3. **Jouer** :
