@@ -74,7 +74,7 @@ Pour ajouter de nouveaux personnages au jeu :
 - Ajouter des effets sonores pour améliorer l'expérience utilisateur.
 
 ## Auteur
-Projet développé par [Votre Nom ou Pseudonyme].
+Projet développé par KemseyG (DrWhite).
 
 ## Licence
 Ce projet est sous licence libre. Vous êtes libre de le modifier et de le redistribuer. 😊
