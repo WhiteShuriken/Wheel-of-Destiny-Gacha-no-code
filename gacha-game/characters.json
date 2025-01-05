@@ -1,0 +1,18 @@
+[
+  { "name": "Khalil", "rarity": "Common", "image": "assets/images/hero/Khalil.jfif" },
+  { "name": "Nassim", "rarity": "Common", "image": "assets/images/hero/Nassim.jpg" },
+  { "name": "Mia", "rarity": "Rare", "image": "assets/images/hero/Mia.jpg" },
+  { "name": "Kemsey", "rarity": "Legendary", "image": "assets/images/hero/Kemsey.jpg" },
+  { "name": "Axel", "rarity": "Common", "image": "assets/images/hero/Axel.jpg" },
+  { "name": "Benjamin", "rarity": "Legendary", "image": "assets/images/hero/Benjamin.png" },
+  { "name": "Mateo", "rarity": "Rare", "image": "assets/images/hero/Mateo.jpg" },
+  { "name": "Allison", "rarity": "Rare", "image": "assets/images/hero/Allison.jpg" },
+  { "name": "David", "rarity": "Rare", "image": "assets/images/hero/David.jpg" },
+  { "name": "Erwin", "rarity": "Rare", "image": "assets/images/hero/Erwin.jpg" },
+  { "name": "Kilian", "rarity": "Legendary", "image": "assets/images/hero/Kilian.jpg" },
+  { "name": "Nael", "rarity": "Common", "image": "assets/images/hero/Nael.jpg" },
+  { "name": "Arnaud", "rarity": "Common", "image": "assets/images/hero/Arnaud.jpg" },
+  { "name": "Cyril", "rarity": "Common", "image": "assets/images/hero/Cyril.jpg" },
+  { "name": "Loic", "rarity": "Rare", "image": "assets/images/hero/Loic.jpg" },
+  { "name": "Sabrina", "rarity": "Rare", "image": "assets/images/hero/Sabrina.jpg" }
+]

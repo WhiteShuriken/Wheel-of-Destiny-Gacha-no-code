@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Destiny Gacha</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .pack-options {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pack-button {
+            position: relative;
+        }
+
+        .pack-button img {
+            display: block;
+            width: 150px;
+            height: 150px;
+        }
+
+        .x10-icon {
+            height: 10px;
+            width: auto;
+            position: absolute;
+            top: 2px;
+            right: -2px;
+        }
+    </style>
+</head>
+<body>
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center;">
+        <div id="coin-display" style="margin-right: 10px;">
+            <img src="assets/images/icon/coin-icon.png" alt="Coins" style="height: 20px; vertical-align: middle;">
+            <span id="coin-count"></span>
+        </div>
+        <button><img src="assets/images/icon/user-icon.png" alt="Profile"></button>
+    </div>
+
+    <div id="content"></div>
+
+    <nav>
+        <button onclick="showHome()"><img src="assets/images/icon/home-icon.png" alt="Home"></button>
+        <button onclick="showPull()"><img src="assets/images/icon/pull-icon.png" alt="Pull"></button>
+        <button onclick="showCollection()"><img src="assets/images/icon/collection-icon.png" alt="Collection"></button>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
+</html>
