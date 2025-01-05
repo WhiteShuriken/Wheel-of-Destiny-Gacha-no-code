@@ -126,3 +126,58 @@ body > div:first-child button:hover {
     color: #777;
     margin-bottom: 5px;
 }
+
+.pull-button-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: start;
+    padding: 20px;
+}
+
+.pull-button {
+    position: relative;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.pull-button img {
+    width: 150px;
+    height: auto;
+    display: block;
+}
+
+.pull-button img .x10-icon {
+    position: absolute; /* pour s'assurer que l'icône se superpose bien */
+    top: 10px;
+    right: 10px;
+    width: auto;
+    height: 10px;
+}
+
+.pull-button-text {
+    text-align: center; /* Centre le texte sous l'image */
+    font-size: 14px;    /* Taille de texte */
+    color: #333;        /* Couleur de texte (modifiable selon votre thème) */
+    margin-top: 5px;    /* Espace au-dessus du texte */
+}
+
+.pull-button-content {
+    position: relative;
+    display: inline-block;
+}
+
+.pull-button-content .pack-image {
+    display: block;
+    width: 150px;
+    height: auto;
+}
+
+.pull-button-content .x10-icon {
+    position: absolute;
+    top: 0px; /* Ajustez selon vos besoins */
+    right: 0px; /* Ajustez selon vos besoins */
+    width: 75px; /* Taille de l'icône */
+    height: auto;
+}

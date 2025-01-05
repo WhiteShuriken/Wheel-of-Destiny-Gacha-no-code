@@ -48,12 +48,14 @@ function showPull() {
         <div class="pack-options">
             <button id="pullButtonSingle" class="pack-button" disabled>
                 <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis">
-                Pack Genesis (300 Coins)
+                <div class="pull-button-text">Pack Genesis (300 Coins)</div>
             </button>
             <button id="pullButtonMultiple" class="pack-button" disabled>
-                <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis" >
-                <img src="assets/images/pack/x10.png" alt="x10" class="x10-icon">
-                Pack Genesis (X10) (2700 Coins)
+                <div class="pull-button-content">
+                   <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis" class="pack-image">
+                    <img src="assets/images/pack/x10.png" alt="x10" class="x10-icon">
+                </div>
+                <div class="pull-button-text">Pack Genesis (X10) (2700 Coins)</div>
             </button>
         </div>
         <div id="pullResult"></div>
