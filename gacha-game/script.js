@@ -1,7 +1,7 @@
 let coins = 5000000;
 const collectedCharacters = {};
 
-const rarityWeights = {
+const rarityWeights = { //Drop Taux
     'Common': 70,
     'Rare': 20,
     'Legendary': 10
