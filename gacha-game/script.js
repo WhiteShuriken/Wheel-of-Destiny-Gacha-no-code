@@ -48,15 +48,15 @@ function showPull() {
         <h1>Gacha Pull</h1>
         <div class="pack-options">
             <button id="pullButtonSingle" class="pack-button" disabled>
-                <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis">
-                <div class="pull-button-text">Pack Genesis (300 Coins)</div>
-            </button>
+            <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis">
+            <div class="pull-button-text">Pack Genesis (300 <img src="assets/images/icon/coin-icon.png" alt="Coins" style="height: 20px; width: auto; vertical-align: middle;">)</div>
+        </button>
             <button id="pullButtonMultiple" class="pack-button" disabled>
                 <div class="pull-button-content">
                    <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis" class="pack-image">
                     <img src="assets/images/pack/x10.png" alt="x10" class="x10-icon">
                 </div>
-                <div class="pull-button-text">Pack Genesis (X10) (2700 Coins)</div>
+                <div class="pull-button-text">Pack Genesis (X10) (2700 <img src="assets/images/icon/coin-icon.png" alt="Coins" style="height: 20px; width: auto; vertical-align: middle;">)</div>
             </button>
         </div>
         <div id="pullResult"></div>

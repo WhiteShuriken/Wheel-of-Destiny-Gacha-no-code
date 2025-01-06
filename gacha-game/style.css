@@ -161,6 +161,9 @@ body > div:first-child button:hover {
     font-size: 14px;    /* Taille de texte */
     color: #333;        /* Couleur de texte (modifiable selon votre thème) */
     margin-top: 5px;    /* Espace au-dessus du texte */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .pull-button-content {
