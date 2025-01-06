@@ -8,6 +8,7 @@ const rarityWeights = { //Drop Taux
 };
 
 let characters = [];
+let currentSortOption = 'alphabetical'; // Store the current sort option
 
 function updateCoinDisplay() {
     document.getElementById('coin-count').innerText = coins;
@@ -257,11 +258,13 @@ function showCollection() {
     setActiveNav('collection');
 
     const sortBySelect = document.getElementById('sortBy');
+    sortBySelect.value = currentSortOption; // Set the select value to the current sort option
     sortBySelect.addEventListener('change', () => {
-        updateCollectionDisplay(sortBySelect.value);
+        currentSortOption = sortBySelect.value; // Update the current sort option
+        updateCollectionDisplay(currentSortOption);
     });
 
-    updateCollectionDisplay('alphabetical'); // Initial sort
+    updateCollectionDisplay(currentSortOption); // Use the current sort option
 }
 
 function setActiveNav(page) {
@@ -272,6 +275,8 @@ function setActiveNav(page) {
         activeButton.classList.add('active');
     }
 }
+
+
 
 // Show the home page by default
 showHome();
