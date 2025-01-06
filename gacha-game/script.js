@@ -48,15 +48,15 @@ function showPull() {
         <h1>Gacha Pull</h1>
         <div class="pack-options">
             <button id="pullButtonSingle" class="pack-button" disabled>
-            <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis">
-            <div class="pull-button-text">Pack Genesis (300 <img src="assets/images/icon/coin-icon.png" alt="Coins" style="height: 20px; width: auto; vertical-align: middle;">)</div>
-        </button>
+                <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis">
+                <div class="pull-button-text">Pack Genesis (300 <img src="assets/images/icon/coin-icon.png" alt="Coin" style="height: 20px; width: auto; vertical-align: middle;">)</div>
+            </button>
             <button id="pullButtonMultiple" class="pack-button" disabled>
                 <div class="pull-button-content">
-                   <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis" class="pack-image">
-                    <img src="assets/images/pack/x10.png" alt="x10" class="x10-icon">
+                    <img src="assets/images/pack/pack-s1-Genesis.jpg" alt="Pack Genesis" class="pack-image">
+                       <img src="assets/images/pack/x10.png" alt="x10" class="x10-icon">
                 </div>
-                <div class="pull-button-text">Pack Genesis (X10) (2700 <img src="assets/images/icon/coin-icon.png" alt="Coins" style="height: 20px; width: auto; vertical-align: middle;">)</div>
+                <div class="pull-button-text">Pack Genesis (X10) (2700 <img src="assets/images/icon/coin-icon.png" alt="Coin" style="height: 20px; width: auto; vertical-align: middle;">)</div>
             </button>
         </div>
         <div id="pullResult"></div>
@@ -91,13 +91,27 @@ function performMultiplePulls(count) {
     if (coins >= 2700) {
         coins -= 2700;
         updateCoinDisplay();
-        document.getElementById('pullResult').innerText = ''; // Clear previous results
+        const pullResultDiv = document.getElementById('pullResult');
+        pullResultDiv.innerHTML = ''; // Clear previous results
         for (let i = 0; i < count; i++) {
             const pulledCharacter = drawCharacter();
             if (pulledCharacter) {
-                const resultElement = document.createElement('p');
-                resultElement.innerText = `Pulled: ${pulledCharacter.name} (${pulledCharacter.rarity})`;
-                document.getElementById('pullResult').appendChild(resultElement);
+                const characterDiv = document.createElement('div');
+
+                const characterImage = document.createElement('img');
+                characterImage.src = pulledCharacter.image;
+                characterImage.alt = pulledCharacter.name;
+                characterDiv.appendChild(characterImage);
+
+                const characterName = document.createElement('p');
+                characterName.innerText = pulledCharacter.name;
+                characterDiv.appendChild(characterName);
+
+                const characterRarity = document.createElement('p');
+                characterRarity.innerText = pulledCharacter.rarity;
+                characterDiv.appendChild(characterRarity);
+
+                pullResultDiv.appendChild(characterDiv);
 
                 updateCollectedCharacters(pulledCharacter);
             }
@@ -154,31 +168,27 @@ function performPull() {
         const pulledCharacter = drawCharacter();
         if (pulledCharacter) {
             console.log("Pulled character:", pulledCharacter);
-            document.getElementById('pullResult').innerText = `You drew: ${pulledCharacter.name} (${pulledCharacter.rarity})`;
+            const pullResultDiv = document.getElementById('pullResult');
+            pullResultDiv.innerHTML = ''; // Clear previous result
 
-            // Update collected characters
-            if (collectedCharacters[pulledCharacter.name]) {
-                collectedCharacters[pulledCharacter.name].count++;
-                console.log("Character count updated:", collectedCharacters[pulledCharacter.name]);
-            } else {
-                collectedCharacters[pulledCharacter.name] = { ...pulledCharacter, count: 1 };
-                console.log("Character added to collection:", collectedCharacters[pulledCharacter.name]);
-            }
+            const characterDiv = document.createElement('div');
 
-            // Calculate level
-            const drawCount = collectedCharacters[pulledCharacter.name].count;
-            let level = 1;
-            if (drawCount >= 100) {
-                level = 5;
-            } else if (drawCount >= 40) {
-                level = 4;
-            } else if (drawCount >= 15) {
-                level = 3;
-            } else if (drawCount >= 5) {
-                level = 2;
-            }
-            collectedCharacters[pulledCharacter.name].level = level;
-            collectedCharacters[pulledCharacter.name].xp = drawCount;
+            const characterImage = document.createElement('img');
+            characterImage.src = pulledCharacter.image;
+            characterImage.alt = pulledCharacter.name;
+            characterDiv.appendChild(characterImage);
+
+            const characterName = document.createElement('p');
+            characterName.innerText = pulledCharacter.name;
+            characterDiv.appendChild(characterName);
+
+            const characterRarity = document.createElement('p');
+            characterRarity.innerText = pulledCharacter.rarity;
+            characterDiv.appendChild(characterRarity);
+
+            pullResultDiv.appendChild(characterDiv);
+
+            updateCollectedCharacters(pulledCharacter);
         }
     } else {
         document.getElementById('pullResult').innerText = "Not enough coins!";

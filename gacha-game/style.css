@@ -184,3 +184,29 @@ body > div:first-child button:hover {
     width: 75px; /* Taille de l'icône */
     height: auto;
 }
+
+/* Styles for the pull result */
+#pullResult {
+    margin-top: 20px;
+    font-size: 1.1em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+#pullResult div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 120px;
+    text-align: center;
+}
+
+#pullResult img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 5px;
+}
