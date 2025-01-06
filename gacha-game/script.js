@@ -14,21 +14,19 @@ function updateCoinDisplay() {
     document.getElementById('coin-count').innerText = coins;
 }
 
-function drawCharacter(packName) {
-    if (characters.length === 0) {
+function drawCharacter(packId) {
+    if (!characters) {
         console.error("Character data not loaded yet.");
         return null;
     }
-    const packCharacters = characters.filter(char => char.packs.includes(packName));
+    const packCharacters = characters.filter(character => character.packId.includes(packId));
     if (packCharacters.length === 0) {
-        console.error(`No characters available in the ${packName} pack.`);
+        console.error(`No characters available for pack ID: ${packId}`);
         return null;
     }
-
     const randomNumber = Math.random() * 100;
     let cumulativeWeight = 0;
     let selectedRarity;
-
     for (const rarity in rarityWeights) {
         cumulativeWeight += rarityWeights[rarity];
         if (randomNumber <= cumulativeWeight) {
@@ -36,7 +34,6 @@ function drawCharacter(packName) {
             break;
         }
     }
-
     const charactersOfRarity = packCharacters.filter(char => char.rarity === selectedRarity);
     const randomIndex = Math.floor(Math.random() * charactersOfRarity.length);
     return charactersOfRarity[randomIndex];
@@ -49,94 +46,61 @@ function showHome() {
 }
 
 async function showPull() {
-    console.log("showPull function called");
-    let packs = [];
-    try {
-        const response = await fetch('packs.json');
-        packs = await response.json();
-    } catch (error) {
-        console.error("Error loading pack data:", error);
-        return;
-    }
-
-    let packOptionsHTML = '';
-    packs.forEach(pack => {
-        packOptionsHTML += `
-            <button id="pullButtonSingle-${pack.name}" class="pack-button" data-pack-name="${pack.name}">
-                <img src="${pack.image}" alt="Pack ${pack.name}">
-                <div class="pull-button-text">Pack ${pack.name} (300 <img src="assets/images/icon/coin-icon.png" alt="Coin" style="height: 20px; width: auto; vertical-align: middle;">)</div>
-            </button>
-            <button id="pullButtonMultiple-${pack.name}" class="pack-button" data-pack-name="${pack.name}">
-                <div class="pull-button-content">
-                    <img src="${pack.image}" alt="Pack ${pack.name}" class="pack-image">
-                    <img src="assets/images/pack/x10.png" alt="x10" class="x10-icon">
-                </div>
-                <div class="pull-button-text">Pack ${pack.name} (X10) (2700 <img src="assets/images/icon/coin-icon.png" alt="Coin" style="height: 20px; width: auto; vertical-align: middle;">)</div>
-            </button>
-        `;
-    });
-
     document.getElementById('content').innerHTML = `
         <h1>Gacha Pull</h1>
         <div class="pack-options">
-            ${packOptionsHTML}
         </div>
         <div id="pullResult"></div>
     `;
     setActiveNav('pull');
     updateCoinDisplay();
 
-    const loadCharacterData = async () => {
-        try {
-            const response = await fetch('characters.json');
-            characters = await response.json();
-            console.log("Character data loaded successfully");
-            attachPullListeners();
-        } catch (error) {
-            console.error("Error loading character data:", error);
-        }
-    };
-
-    const attachPullListeners = () => {
+    try {
+        const response = await fetch('packs.json');
+        const packsData = await response.json();
+        const packs = packsData.packs;
+        let packOptionsHTML = '';
         packs.forEach(pack => {
-            const pullButtonSingle = document.getElementById(`pullButtonSingle-${pack.name}`);
-            const pullButtonMultiple = document.getElementById(`pullButtonMultiple-${pack.name}`);
-            if (pullButtonSingle && pullButtonMultiple) {
-                pullButtonSingle.addEventListener('click', () => performPull(pack.name));
-                pullButtonMultiple.addEventListener('click', () => performMultiplePulls(pack.name, 10));
-            }
+            packOptionsHTML += `
+                <button onclick="performPull('${pack.id}')"><img src="${pack.image}" alt="${pack.name}" style="height: 50px; width: auto; vertical-align: middle;"> Pull ${pack.name} (${pack.singleCost} <img src="assets/images/icon/coin-icon.png" alt="Coin" style="height: 20px; width: auto; vertical-align: middle;">)</button>
+                <button onclick="performMultiplePulls('${pack.id}', 10)"><img src="${pack.image}" alt="${pack.name}" style="height: 50px; width: auto; vertical-align: middle;"> Pull ${pack.name} x10 (${pack.multiCost} <img src="assets/images/icon/coin-icon.png" alt="Coin" style="height: 20px; width: auto; vertical-align: middle;">)</button>
+            `;
         });
-    };
+        document.querySelector('.pack-options').innerHTML = packOptionsHTML;
+    } catch (error) {
+        console.error("Error loading pack data:", error);
+    }
 
-    loadCharacterData();
+    try {
+        const response = await fetch('characters.json');
+        characters = await response.json();
+    } catch (error) {
+        console.error("Error loading character data:", error);
+    }
 }
 
-function performMultiplePulls(packName, count) {
-    if (coins >= 2700) {
-        coins -= 2700;
+async function performMultiplePulls(packId, count) {
+    let cost;
+    try {
+        const response = await fetch('packs.json');
+        const packsData = await response.json();
+        const pack = packsData.packs.find(p => p.id === packId);
+        cost = pack.multiCost;
+    } catch (error) {
+        console.error("Error loading pack data:", error);
+        return;
+    }
+    if (coins >= cost) {
+        coins -= cost;
         updateCoinDisplay();
         const pullResultDiv = document.getElementById('pullResult');
         pullResultDiv.innerHTML = ''; // Clear previous results
         for (let i = 0; i < count; i++) {
-            const pulledCharacter = drawCharacter(packName);
+            const pulledCharacter = drawCharacter(packId);
             if (pulledCharacter) {
                 const characterDiv = document.createElement('div');
-
-                const characterImage = document.createElement('img');
-                characterImage.src = pulledCharacter.image;
-                characterImage.alt = pulledCharacter.name;
-                characterDiv.appendChild(characterImage);
-
-                const characterName = document.createElement('p');
-                characterName.innerText = pulledCharacter.name;
-                characterDiv.appendChild(characterName);
-
-                const characterRarity = document.createElement('p');
-                characterRarity.innerText = pulledCharacter.rarity;
-                characterDiv.appendChild(characterRarity);
-
+                characterDiv.innerText = `Pulled: ${pulledCharacter.name} (${pulledCharacter.rarity})`;
                 pullResultDiv.appendChild(characterDiv);
-
                 updateCollectedCharacters(pulledCharacter);
             }
         }
@@ -145,33 +109,25 @@ function performMultiplePulls(packName, count) {
     }
 }
 
-function performPull(packName) {
-    if (coins >= 300) {
-        coins -= 300;
+async function performPull(packId) {
+    let cost;
+    try {
+        const response = await fetch('packs.json');
+        const packsData = await response.json();
+        const pack = packsData.packs.find(p => p.id === packId);
+        cost = pack.singleCost;
+    } catch (error) {
+        console.error("Error loading pack data:", error);
+        return;
+    }
+    if (coins >= cost) {
+        coins -= cost;
         updateCoinDisplay();
-        const pulledCharacter = drawCharacter(packName);
+        const pulledCharacter = drawCharacter(packId);
         if (pulledCharacter) {
             console.log("Pulled character:", pulledCharacter);
             const pullResultDiv = document.getElementById('pullResult');
-            pullResultDiv.innerHTML = ''; // Clear previous result
-
-            const characterDiv = document.createElement('div');
-
-            const characterImage = document.createElement('img');
-            characterImage.src = pulledCharacter.image;
-            characterImage.alt = pulledCharacter.name;
-            characterDiv.appendChild(characterImage);
-
-            const characterName = document.createElement('p');
-            characterName.innerText = pulledCharacter.name;
-            characterDiv.appendChild(characterName);
-
-            const characterRarity = document.createElement('p');
-            characterRarity.innerText = pulledCharacter.rarity;
-            characterDiv.appendChild(characterRarity);
-
-            pullResultDiv.appendChild(characterDiv);
-
+            pullResultDiv.innerHTML = `Pulled: ${pulledCharacter.name} (${pulledCharacter.rarity})`;
             updateCollectedCharacters(pulledCharacter);
         }
     } else {
@@ -211,12 +167,7 @@ function updateCollectionDisplay(sortBy) {
     if (sortBy === 'alphabetical') {
         sortedCharacters.sort(([, a], [, b]) => a.name.localeCompare(b.name));
     } else if (sortBy === 'level') {
-        sortedCharacters.sort(([, a], [, b]) => {
-            if (b.level !== a.level) {
-                return b.level - a.level;
-            }
-            return b.xp - a.xp;
-        });
+        sortedCharacters.sort(([, a], [, b]) => b.level - a.level);
     } else if (sortBy === 'rarity') {
         const rarityOrder = { 'Common': 1, 'Rare': 2, 'Legendary': 3 };
         sortedCharacters.sort(([, a], [, b]) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);

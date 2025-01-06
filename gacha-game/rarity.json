@@ -1,0 +1,11 @@
+{
+  "Common": {
+    "color": "grey"
+  },
+  "Rare": {
+    "color": "blue"
+  },
+  "Legendary": {
+    "color": "purple"
+  }
+}
