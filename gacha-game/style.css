@@ -1,212 +1,525 @@
-body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
+/* ====== Variables ====== */
+:root {
+    /* Colors */
+    --bg-color: #f0f0f0;
+    --text-color: #333;
+    --text-muted: #777;
+    
+    /* Theme Colors */
+    --primary: #343457;
+    --primary-hover: #66bb6a;
+    
+    /* Navigation Colors */
+    --nav-bg: #333;
+    --nav-button: #555;
+    --nav-button-hover: #777;
+    
+    /* Rarity Colors */
+    --rarity-common: grey;
+    --rarity-rare: blue;
+    --rarity-legendary: purple;
+    
+    /* UI Elements */
+    --border-color: #ccc;
+    --exp-bar-bg: #ddd;
+    --exp-bar-fill: #2e63b3;
+    
+    /* Spacing */
+    --space-xs: 5px;
+    --space-sm: 10px;
+    --space-md: 20px;
+    
+    /* Sizes */
+    --icon-size: 20px;
+    --char-img-size: 150px;
 }
 
+/* ====== Reset & Base Styles ====== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* ====== Layout & Navigation ====== */
+/* Header/Top Bar */
+.top-bar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    z-index: 100;
+}
+
+.coin-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.coin-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    vertical-align: middle;
+}
+
+/* Navigation */
 nav {
-    background-color: #333;
-    color: white;
-    padding: 10px;
-    text-align: center;
+    background-color: var(--nav-bg);
+    padding: var(--space-sm);
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     display: flex;
     justify-content: center;
+    z-index: 100;
 }
 
 nav button {
     flex-grow: 1;
-    background-color: #555;
-    color: white;
+    background-color: var(--nav-button);
     border: none;
-    padding: 10px 0;
-    margin: 0;
+    padding: var(--space-sm) 0;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-color 0.2s;
 }
 
 nav button.active {
-    background-color: #343457;
-    color: white;
-}
-
-nav button img {
-    max-height: 20px;
-    max-width: 20px;
+    background-color: var(--primary);
 }
 
 nav button:hover {
-    background-color: #777;
+    background-color: var(--nav-button-hover);
 }
 
+nav button img {
+    height: var(--icon-size);
+    width: var(--icon-size);
+}
+
+/* Main Content */
 #content {
-    padding: 20px;
-    margin-bottom: 60px; /* To prevent content overlap with the fixed navigation */
+    padding: var(--space-md);
+    margin: 60px 0;
+    min-height: calc(100vh - 120px);
 }
 
+/* Loading Spinner */
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: var(--space-md);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto var(--space-sm);
+    border: 4px solid var(--exp-bar-bg);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ====== UI Components ====== */
+/* Buttons */
+.profile-button {
+    background-color: var(--primary);
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-button:hover {
+    background-color: var(--primary-hover);
+}
+
+.profile-button img {
+    height: var(--icon-size);
+    width: var(--icon-size);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.modal-content {
+    background: white;
+    padding: var(--space-md);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+.modal-content h2 {
+    color: var(--text-color);
+    margin-bottom: var(--space-sm);
+}
+
+.modal-content button {
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal-content button:hover {
+    background-color: var(--nav-button-hover);
+}
+
+/* Experience Bar */
 .experience-bar-container {
-    background-color: #ddd;
-    height: 10px;
-    border-radius: 5px;
-    margin-bottom: 5px;
+    width: 100%;
+    height: 6px;
+    background-color: var(--exp-bar-bg);
+    border-radius: 3px;
+    margin: 10px 0;
+    overflow: hidden;
+    position: relative;
 }
 
 .experience-bar {
-    background-color: #2e63b3;
-    height: 10px;
+    height: 100%;
+    background-color: var(--exp-bar-fill);
+    border-radius: 3px;
+    transition: width 0.3s ease-in-out;
+}
+
+.exp-text {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* Sort Options */
+.sort-options {
+    margin-bottom: var(--space-md);
+    text-align: center;
+}
+
+.sort-options select {
+    padding: 8px 15px;
+    font-size: 1em;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-}
-
-body > div:first-child button { /* Style the Profile button */
-    background-color: #343457;
-    color: white;
-    border: none;
-    padding: 8px; /* Reduced padding */
-    text-align: center;
-    text-decoration: none;
-    display: inline-flex; /* Changed to inline-flex */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    font-size: 14px;
-    margin: 4px 2px;
+    background-color: white;
     cursor: pointer;
-    border-radius: 4px;
 }
 
-body > div:first-child button img {
-    max-height: 20px;
-    max-width: 20px;
+.sort-options select:focus {
+    outline: none;
+    border-color: var(--primary);
 }
 
-body > div:first-child button:hover {
-    background-color: #66bb6a;
-}
-
-#collection-content {
+/* ====== Collection & Character Cards ====== */
+/* Collection Grid */
+#collectionContent {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    padding: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-md);
+    padding: var(--space-md);
 }
 
-.character-icon {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid #ccc;
-    padding: 10px;
-    width: 100%; /* Adjust width for grid */
-    box-sizing: border-box; /* Include padding and border in element's total width and height */
-    margin-bottom: 0; /* Remove bottom margin for grid layout */
+/* Character Card Base */
+.collection-item {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    position: relative;
 }
 
-.character-icon img {
-    width: 150px;
-    height: 150px;
-    margin-bottom: 5px;
+.collection-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+/* Character Image */
+.collection-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.collection-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Rarity Borders */
+.collection-item[data-rarity="Common"] {
+    border: 2px solid var(--rarity-common);
+}
+
+.collection-item[data-rarity="Rare"] {
+    border: 2px solid var(--rarity-rare);
+    box-shadow: 0 2px 8px rgba(0, 0, 255, 0.1);
+}
+
+.collection-item[data-rarity="Legendary"] {
+    border: 2px solid var(--rarity-legendary);
+    box-shadow: 0 2px 8px rgba(128, 0, 128, 0.2);
+}
+
+/* Character Info */
 .character-info {
-    text-align: center;
+    padding: 15px;
+    background: white;
 }
 
 .character-name {
+    font-size: 1.2em;
     font-weight: bold;
-    margin-bottom: 2px;
-}
-
-.character-rarity {
-    font-size: 0.9em;
-    color: #777;
     margin-bottom: 5px;
+    color: var(--text-color);
 }
 
-.pull-button-container {
+/* Rarity Badge */
+.character-rarity {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin: 8px 0;
+    display: inline-block;
+}
+
+.collection-item[data-rarity="Common"] .character-rarity {
+    background-color: rgba(128, 128, 128, 0.1);
+    color: var(--rarity-common);
+}
+
+.collection-item[data-rarity="Rare"] .character-rarity {
+    background-color: rgba(0, 0, 255, 0.1);
+    color: var(--rarity-rare);
+}
+
+.collection-item[data-rarity="Legendary"] .character-rarity {
+    background-color: rgba(128, 0, 128, 0.1);
+    color: var(--rarity-legendary);
+}
+
+/* Character Stats */
+.character-stats {
     display: flex;
-    gap: 20px;
-    justify-content: center;
-    align-items: start;
-    padding: 20px;
+    justify-content: space-around;
+    padding: 12px 0;
+    margin: 8px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+/* ====== Pull Page Styles ====== */
+/* Pack Options */
+.pack-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Réduit la taille minimale */
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Pull Button Container */
+.pull-button-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pull-button-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Pull Button */
 .pull-button {
-    position: relative;
+    background: none;
     border: none;
     padding: 0;
     cursor: pointer;
-}
-
-.pull-button img {
-    width: 150px;
-    height: auto;
+    width: 100%;
     display: block;
-}
-
-.pull-button img .x10-icon {
-    position: absolute; /* pour s'assurer que l'icône se superpose bien */
-    top: 10px;
-    right: 10px;
-    width: auto;
-    height: 10px;
-}
-
-.pull-button-text {
-    text-align: center; /* Centre le texte sous l'image */
-    font-size: 14px;    /* Taille de texte */
-    color: #333;        /* Couleur de texte (modifiable selon votre thème) */
-    margin-top: 5px;    /* Espace au-dessus du texte */
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .pull-button-content {
     position: relative;
-    display: inline-block;
+    display: block;  /* Changé de inline-block à block */
+    width: 100%;
 }
 
 .pull-button-content .pack-image {
     display: block;
-    width: 150px;
+    width: 100%;
     height: auto;
+    border-radius: 8px;
 }
 
 .pull-button-content .x10-icon {
     position: absolute;
-    top: 0px; /* Ajustez selon vos besoins */
-    right: 0px; /* Ajustez selon vos besoins */
-    width: 75px; /* Taille de l'icône */
+    top: 5px;          /* Ajusté pour le positionnement */
+    right: 5px;        /* Ajusté pour le positionnement */
+    width: 80px;        /* Taille réduite pour mieux s'intégrer */
     height: auto;
+    z-index: 2;         /* Assure que l'icône est au-dessus de l'image */
 }
 
-/* Styles for the pull result */
-#pullResult {
-    margin-top: 20px;
-    font-size: 1.1em;
+/* Pull Button Text */
+.pull-button-text {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    gap: 10px;
+    padding: 8px;
+    font-size: 14px;
+    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.pull-button-text img {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+/* Pull Results */
+#pullResult {
+    margin-top: var(--space-md);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-sm);
+    padding: var(--space-sm);
 }
 
 #pullResult div {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid #ccc;
-    padding: 10px;
-    width: 120px;
+    border: 1px solid var(--border-color);
+    padding: var(--space-sm);
+    border-radius: 8px;
     text-align: center;
 }
 
-#pullResult img {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 5px;
+#pullResult div img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: var(--space-xs);
+    border-radius: 4px;
+}
+
+/* ====== Responsive Design ====== */
+@media (max-width: 768px) {
+    :root {
+        --char-img-size: 120px;
+    }
+
+    .pack-options {
+        grid-template-columns: 1fr;
+    }
+
+    #collectionContent {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    #content {
+        padding: var(--space-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --char-img-size: 100px;
+    }
+
+    .character-stats {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .pull-button-container {
+        padding: var(--space-sm);
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: var(--space-sm);
+    }
 }
