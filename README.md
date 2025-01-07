@@ -76,7 +76,9 @@ Pour ajouter de nouveaux personnages au jeu :
 ## Auteur
 Projet développé par KemseyG (DrWhite).
 
-## Licence
-Ce projet est sous licence libre. Vous êtes libre de le modifier et de le redistribuer. 
-
-Cdlt
+## Source 
+- Utilisation de ChatGPT (OpenAI)
+- Utilisation de Gemini (Google)
+- Utilisation de MistralAI (Mistral AI)
+- Utilisation de BlackoxAI (Cours Connecte Inc)
+- Utilisation de Devdocs.io ()
