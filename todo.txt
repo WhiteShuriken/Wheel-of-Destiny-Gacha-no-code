@@ -1,5 +1,1 @@
-1 : Refaire l'affichage des icone de personnage dans les pull
-2 : Refaire l'interface des Pull pour remettre des grosse icone
-3 : Collection > Personnage toujours affiché, mais grisé si non débloqué 
-4 : Remettre les putin de prrix que je veux ! 
-5 : Crée un système pour les news par bloc // Inspiration //
+Ajouter un compte à rebours jusqu'à la prochaine réinitialisation

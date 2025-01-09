@@ -1,6 +1,11 @@
+import HomeView from './homeView.js';
+
+// Ajoutez cette ligne pour exporter les objets nécessaires
+export { GameState, UIUtils, NavigationController, GachaSystem };
+
 // ====== Configuration ======
 const CONFIG = {
-    STARTING_COINS: 5000000,
+    STARTING_COINS: 5000,
     RARITY_WEIGHTS: {
         'Common': 70,
         'Rare': 20,
@@ -122,6 +127,13 @@ const GameState = {
     collectedCharacters: {},
     pullHistory: [],
     maxHistorySize: 10,
+    dailyRewards: {
+        lastClaimDate: null,
+        claimedRewards: {
+            coins: false,
+            pull: false
+        }
+    },
 
     init() {
         console.log('Initializing GameState');
@@ -131,10 +143,19 @@ const GameState = {
             this.coins = savedState.coins;
             this.collectedCharacters = savedState.collectedCharacters;
             this.pullHistory = savedState.pullHistory || [];
+            // Ajout du chargement des récompenses quotidiennes
+            this.dailyRewards = savedState.dailyRewards || {
+                lastClaimDate: null,
+                claimedRewards: {
+                    coins: false,
+                    pull: false
+                }
+            };
         }
         
         this.updateUI();
     },
+    
 
     updateUI() {
         const coinEl = document.getElementById('coin-count');
@@ -147,10 +168,12 @@ const GameState = {
         const state = {
             coins: this.coins,
             collectedCharacters: this.collectedCharacters,
-            pullHistory: this.pullHistory
+            pullHistory: this.pullHistory,
+            dailyRewards: this.dailyRewards  // Ajout de la sauvegarde des récompenses
         };
         StorageManager.setItem('gameState', state);
     },
+    
 
     updateCharacter(character) {
         if (!this.collectedCharacters[character.name]) {
@@ -196,8 +219,22 @@ const GameState = {
             return true;
         }
         return false;
+    },
+
+    canClaimDailyReward(rewardType) {
+        const today = new Date().toDateString();
+        const lastClaim = this.dailyRewards.lastClaimDate;
+        return !lastClaim || lastClaim !== today || !this.dailyRewards.claimedRewards[rewardType];
+    },
+
+    claimDailyReward(rewardType) {
+        const today = new Date().toDateString();
+        this.dailyRewards.lastClaimDate = today;
+        this.dailyRewards.claimedRewards[rewardType] = true;
+        this.save();
     }
 };
+
 
 
 // ====== Error Handler ======
@@ -260,6 +297,16 @@ const UIUtils = {
         }
     }
 };
+
+    // Ajouter les écouteurs d'événements
+document.querySelectorAll('.pull-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const packId = button.dataset.pack;
+        const count = parseInt(button.dataset.count);
+        GachaSystem.performPull(packId, count);
+    });
+});
+
 
 // ====== Gacha System ======
 const GachaSystem = {
@@ -377,9 +424,6 @@ createPullResultElement(character) {
     return div;
 }
 
-
-    
-    
 };
 
 // ====== Navigation Controller ======
@@ -387,18 +431,65 @@ const NavigationController = {
     init() {
         document.getElementById('homeBtn')?.addEventListener('click', () => this.showHome());
         document.getElementById('pullBtn')?.addEventListener('click', () => this.showPull());
-        document.getElementById('collectionBtn')?.addEventListener('click', () => CollectionController.showCollection()); // Modification ici
+        document.getElementById('collectionBtn')?.addEventListener('click', () => CollectionController.showCollection());
     },
+    // Dans NavigationController
     async showHome() {
         const contentDiv = document.getElementById('content');
         if (!contentDiv) return;
 
-        contentDiv.innerHTML = `
-            <h1>Welcome to the Wheel of Destiny Gacha!</h1>
-            <p>Check out the latest news and updates here.</p>
-        `;
-        
+        contentDiv.innerHTML = HomeView.generateHTML();
+        HomeView.initialize();
         UIUtils.setActiveNav('home');
+    },
+
+    initializeDailyButtons() {
+        const claimButtons = document.querySelectorAll('.daily-claim-btn');
+        
+        claimButtons.forEach((button, index) => {
+            button.addEventListener('click', () => {
+                // Désactiver le bouton après le clic
+                button.disabled = true;
+                button.textContent = 'Réclamé';
+                
+                // Logique pour les récompenses
+                if (index === 0) { // Bonus de pièces
+                    GameState.coins += 1000;
+                    GameState.save();
+                    UIUtils.updateCoinDisplay();
+                } else if (index === 1) { // Tirage gratuit
+                    // À implémenter plus tard
+                    console.log('Tirage gratuit réclamé');
+                }
+            });
+        });
+    },
+
+    generateRecentPullsHTML() {
+        const recentPulls = GameState.pullHistory.slice(0, 4);
+    
+        if (recentPulls.length === 0) {
+            return `
+                <div class="empty-state">
+                    <img src="assets/images/icon/pull-icon.png" alt="Empty pulls" class="empty-state-icon">
+                    <p class="no-pulls-message">Aucun personnage obtenu pour le moment</p>
+                    <button onclick="NavigationController.showPull()" class="empty-state-button">
+                        Faire un tirage
+                    </button>
+                </div>
+            `;
+        }
+    
+        return recentPulls.map(character => `
+            <div class="collection-item" data-rarity="${character.rarity}">
+                <img src="${character.image}" alt="${character.name}" 
+                     onerror="this.src='assets/images/icon/user-icon.png'">
+                <div class="character-info">
+                    <h3 class="character-name">${character.name}</h3>
+                    <p class="character-rarity">${character.rarity}</p>
+                </div>
+            </div>
+        `).join('');
     },
 
     async showPull() {
@@ -430,42 +521,48 @@ const NavigationController = {
     
         this.renderPackOptions();
         UIUtils.setActiveNav('pull');
-    }
-    
-    
-,
+    },
 
-    renderPackOptions() {
-        const packOptionsContainer = document.querySelector('.pack-options');
-        if (!packOptionsContainer || !DataCache.packs) return;
-    
-        const packsHTML = DataCache.packs.packs.map(pack => `
-            <div class="pull-button-container">
-                <div class="pull-button-content">
-                    <button onclick="GachaSystem.performPull('${pack.id}', 1)" class="pull-button">
-                        <img src="${pack.image}" alt="${pack.name}" class="pack-image">
-                        <p class="pull-button-text">
-                            Pull ${pack.name} (${pack.singleCost} <img src="assets/images/icon/coin-icon.png" alt="Coin">)
-                        </p>
-                    </button>
-                </div>
+renderPackOptions() {
+    const packOptionsContainer = document.querySelector('.pack-options');
+    if (!packOptionsContainer || !DataCache.packs) return;
+
+    const packsHTML = DataCache.packs.packs.map(pack => `
+        <div class="pull-button-container">
+            <div class="pull-button-content">
+                <button class="pull-button" data-pack="${pack.id}" data-count="1">
+                    <img src="${pack.image}" alt="${pack.name}" class="pack-image">
+                    <p class="pull-button-text">
+                        Pull ${pack.name} (${pack.singleCost} <img src="assets/images/icon/coin-icon.png" alt="Coin">)
+                    </p>
+                </button>
             </div>
-            <div class="pull-button-container">
-                <div class="pull-button-content">
-                    <button onclick="GachaSystem.performPull('${pack.id}', 10)" class="pull-button">
-                        <img src="${pack.image}" alt="${pack.name}" class="pack-image">
-                        <img src="assets/images/pack/x10.png" alt="x10" class="x10-icon">
-                        <p class="pull-button-text">
-                            Pull ${pack.name} x10 (${pack.multiCost} <img src="assets/images/icon/coin-icon.png" alt="Coin">)
-                        </p>
-                    </button>
-                </div>
+        </div>
+        <div class="pull-button-container">
+            <div class="pull-button-content">
+                <button class="pull-button" data-pack="${pack.id}" data-count="10">
+                    <img src="${pack.image}" alt="${pack.name}" class="pack-image">
+                    <img src="assets/images/pack/x10.png" alt="x10" class="x10-icon">
+                    <p class="pull-button-text">
+                        Pull ${pack.name} x10 (${pack.multiCost} <img src="assets/images/icon/coin-icon.png" alt="Coin">)
+                    </p>
+                </button>
             </div>
-        `).join('');
-    
-        packOptionsContainer.innerHTML = packsHTML;
-    }
-};
+        </div>
+    `).join('');
+
+    packOptionsContainer.innerHTML = packsHTML;
+
+    // Ajouter les écouteurs d'événements
+    document.querySelectorAll('.pull-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const packId = button.dataset.pack;
+            const count = parseInt(button.dataset.count);
+            GachaSystem.performPull(packId, count);
+        });
+    });
+}
+}; 
 
 // ====== Collection Controller ======
 const CollectionController = {
@@ -553,8 +650,7 @@ const CollectionController = {
                     return 0;
             }
         });
-    }
-    ,
+    },
 
     createCharacterCard(character) {
         const nextLevel = character.level + 1;
@@ -592,8 +688,7 @@ const CollectionController = {
                 </div>
             </div>
         `;
-    }
-        
+    } 
 };
 
 // ====== App Initialization ======
