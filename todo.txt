@@ -1,1 +1,3 @@
-Ajouter un compte à rebours jusqu'à la prochaine réinitialisation
+1 : Regler Error dans "Dernières aquisition"
+2 : Ajouter un compte à rebours jusqu'à la prochaine réinitialisation
+3 : BIEN PLUS ! 
