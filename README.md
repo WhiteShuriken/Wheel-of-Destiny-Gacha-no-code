@@ -24,6 +24,15 @@ Wheel of Destiny Gacha est un jeu de tirage ("gacha game") simple où les utilis
   - Par ordre alphabétique
   - Par niveau
   - Par rareté
+- **Collection des personnages** :
+- Affichage de tous les personnages (débloqués et non débloqués)
+- Les personnages non débloqués sont affichés en grisé
+- Système de tri intelligent :
+  - Les personnages débloqués apparaissent toujours en premier
+  - Tri par nom avec priorité aux personnages débloqués
+  - Tri par niveau avec progression XP détaillée
+  - Tri par rareté avec sous-tri alphabétique
+
 
 ## Technologies utilisées
 - **HTML** : Structure de la page, mise à jour pour une meilleure accessibilité et organisation.
@@ -47,18 +56,6 @@ Wheel-of-Destiny-Gacha/
 │   │   └── pack/    # Images des packs
 ```
 
-## Instructions pour l'utilisation
-1. **Cloner le projet** :
-   ```bash
-   git clone https://github.com/WhiteShuriken/Wheel-of-Destiny-Gacha-no-code
-   ```
-2. **Ouvrir le fichier `index.html` dans un navigateur**
-3. **Jouer** :
-   - Utilisez les boutons de navigation en bas pour accéder aux différentes sections :
-     - **Home** : Accueil du jeu
-     - **Pull** : Effectuez des tirages de personnages à partir des packs disponibles
-     - **Collection** : Consultez votre collection de personnages et triez-la selon vos préférences
-
 ## Ajout de nouveaux personnages
 Pour ajouter de nouveaux personnages au jeu :
 1. Ouvrez le fichier `characters.json`
@@ -75,7 +72,6 @@ Pour ajouter de nouveaux personnages au jeu :
 
 ## Améliorations possibles
 - Améliorer l'interface des tirages avec de plus grandes icônes
-- Afficher tous les personnages dans la collection (grisés si non débloqués)
 - Implémenter un système de news par blocs
 - Ajouter une animation pour les tirages
 - Implémenter un système de récompenses journalières
@@ -88,7 +84,10 @@ Pour ajouter de nouveaux personnages au jeu :
 - **Pack Apocalypse** : Ajout du pack Apocalypse avec de nouveaux personnages.
 - **Gestion des données** : Introduction de `DataCache` pour une gestion efficace des données du jeu.
 - **Persistance de l'état** : Utilisation de `StorageManager` pour sauvegarder l'état du jeu dans le navigateur.
-- **Améliorations de la collection** : La collection de personnages affiche désormais le niveau et la progression de chaque personnage.
+- **Amélioration de la collection** : 
+  - Affichage complet du roster avec indication visuelle des personnages non débloqués
+  - Nouveau système de tri intelligent donnant la priorité aux personnages débloqués
+  - Affichage détaillé de la progression XP pour les personnages débloqués
 
 ## Auteur
 Projet développé par KemseyG (DrWhite)
@@ -102,3 +101,4 @@ Projet développé par KemseyG (DrWhite)
 - Utilisation de Ollama (ollama)
 - Utilisation de Cline (Saoud Rizwan)
 - Utilisation de CopilotAI (Microsoft)
+- Utilisation de Claude Sonnet (Anthropic)

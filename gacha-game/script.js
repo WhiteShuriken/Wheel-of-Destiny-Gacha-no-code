@@ -120,6 +120,8 @@ const StorageManager = {
 const GameState = {
     coins: CONFIG.STARTING_COINS,
     collectedCharacters: {},
+    pullHistory: [],
+    maxHistorySize: 10,
 
     init() {
         console.log('Initializing GameState');
@@ -128,6 +130,7 @@ const GameState = {
         if (savedState) {
             this.coins = savedState.coins;
             this.collectedCharacters = savedState.collectedCharacters;
+            this.pullHistory = savedState.pullHistory || [];
         }
         
         this.updateUI();
@@ -143,7 +146,8 @@ const GameState = {
     save() {
         const state = {
             coins: this.coins,
-            collectedCharacters: this.collectedCharacters
+            collectedCharacters: this.collectedCharacters,
+            pullHistory: this.pullHistory
         };
         StorageManager.setItem('gameState', state);
     },
@@ -167,6 +171,14 @@ const GameState = {
         return char;
     },
 
+    addToPullHistory(character) {
+        this.pullHistory.unshift(character);
+        if (this.pullHistory.length > this.maxHistorySize) {
+            this.pullHistory = this.pullHistory.slice(0, this.maxHistorySize);
+        }
+        this.save();
+    },
+
     calculateLevel(count) {
         for (let i = CONFIG.LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
             if (count >= CONFIG.LEVEL_THRESHOLDS[i]) {
@@ -186,6 +198,7 @@ const GameState = {
         return false;
     }
 };
+
 
 // ====== Error Handler ======
 const ErrorHandler = {
@@ -292,7 +305,7 @@ const GachaSystem = {
             if (!pack) {
                 throw new Error('Invalid pack ID');
             }
-
+    
             // Calcul du coût
             const cost = count === 10 ? pack.multiCost : pack.singleCost;
             
@@ -301,11 +314,12 @@ const GachaSystem = {
                 ErrorHandler.show("Not enough coins!");
                 return;
             }
-
+    
             // Préparation de l'affichage
             const pullResultDiv = document.getElementById('pullResult');
+            const historyDiv = document.getElementById('pullHistory');
             pullResultDiv.innerHTML = '';
-
+    
             // Tirage des personnages
             const pulls = [];
             for (let i = 0; i < count; i++) {
@@ -315,11 +329,25 @@ const GachaSystem = {
                 // Mise à jour de la collection
                 GameState.updateCharacter(pulledCharacter);
                 
-                // Création de l'élément visuel
+                // Ajouter à l'historique
+                GameState.addToPullHistory(pulledCharacter);
+                
+                // Création de l'élément visuel pour le résultat
                 const characterDiv = this.createPullResultElement(pulledCharacter);
                 pullResultDiv.appendChild(characterDiv);
+    
+                // Mise à jour de l'historique en temps réel
+                if (historyDiv) {
+                    // Vider l'historique actuel
+                    historyDiv.innerHTML = '';
+                    // Recréer l'historique avec les données à jour
+                    GameState.pullHistory.forEach(char => {
+                        const historyCharDiv = this.createPullResultElement(char);
+                        historyDiv.appendChild(historyCharDiv);
+                    });
+                }
             }
-
+    
             return pulls;
         } catch (error) {
             console.error('Error performing pull:', error);
@@ -328,19 +356,30 @@ const GachaSystem = {
         }
     },
 
-    createPullResultElement(character) {
-        const div = document.createElement('div');
-        div.setAttribute('data-rarity', character.rarity);
-        
-        div.innerHTML = `
-            <img src="${character.image}" alt="${character.name}"
-                 loading="lazy" onerror="this.src='assets/images/icon/user-icon.png'">
-            <p class="character-name">${character.name}</p>
+createPullResultElement(character) {
+    const div = document.createElement('div');
+    div.className = 'collection-item';
+    div.setAttribute('data-rarity', character.rarity);
+    
+    div.innerHTML = `
+        <img src="${character.image}" alt="${character.name}"
+             onerror="this.src='assets/images/icon/user-icon.png'">
+        <div class="character-info">
+            <h3 class="character-name">${character.name}</h3>
             <p class="character-rarity">${character.rarity}</p>
-        `;
-        
-        return div;
-    }
+        </div>
+    `;
+    
+    // Ajout des styles spécifiques
+    div.style.background = 'transparent';
+    div.style.boxShadow = 'none';
+    
+    return div;
+}
+
+
+    
+    
 };
 
 // ====== Navigation Controller ======
@@ -365,20 +404,36 @@ const NavigationController = {
     async showPull() {
         const contentDiv = document.getElementById('content');
         if (!contentDiv) return;
-
+    
         contentDiv.innerHTML = `
             <h1>Gacha Pull</h1>
             <div class="pack-options"></div>
             <div id="pullResult"></div>
+            <div class="history-section">
+                <h2>Recent Pulls</h2>
+                <div id="pullHistory" class="pull-history"></div>
+            </div>
         `;
-
+    
+        // Ajouter l'historique
+        const historyDiv = document.getElementById('pullHistory');
+        if (historyDiv && GameState.pullHistory.length > 0) {
+            GameState.pullHistory.forEach(char => {
+                const charElement = GachaSystem.createPullResultElement(char);
+                historyDiv.appendChild(charElement);
+            });
+        }
+    
         if (!DataCache.isInitialized()) {
             await DataCache.init();
         }
-
+    
         this.renderPackOptions();
         UIUtils.setActiveNav('pull');
-    },
+    }
+    
+    
+,
 
     renderPackOptions() {
         const packOptionsContainer = document.querySelector('.pack-options');
@@ -413,58 +468,93 @@ const NavigationController = {
 };
 
 // ====== Collection Controller ======
-// ====== Collection Controller ======
 const CollectionController = {
+    defaultSort: 'alphabetical',
+
     showCollection() {
         const contentDiv = document.getElementById('content');
         if (!contentDiv) return;
 
+        const savedSort = StorageManager.getItem('collectionSort') || this.defaultSort;
+
         contentDiv.innerHTML = `
             <h1>Character Collection</h1>
             <div class="sort-options">
-                <select id="sortBy" onchange="CollectionController.refreshCollection()">
-                    <option value="alphabetical">Sort by Name</option>
-                    <option value="level">Sort by Level</option>
-                    <option value="rarity">Sort by Rarity</option>
+                <select id="sortBy" onchange="CollectionController.handleSort(this.value)">
+                    <option value="alphabetical" ${savedSort === 'alphabetical' ? 'selected' : ''}>Sort by Name</option>
+                    <option value="level" ${savedSort === 'level' ? 'selected' : ''}>Sort by Level</option>
+                    <option value="rarity" ${savedSort === 'rarity' ? 'selected' : ''}>Sort by Rarity</option>
                 </select>
             </div>
             <div id="collectionContent"></div>
         `;
 
-        this.refreshCollection();
+        this.refreshCollection(savedSort);
         UIUtils.setActiveNav('collection');
     },
 
-    refreshCollection() {
-        const collectionContent = document.getElementById('collectionContent');
-        const sortBy = document.getElementById('sortBy')?.value || 'alphabetical';
+    handleSort(value) {
+        StorageManager.setItem('collectionSort', value);
+        this.refreshCollection(value);
+    },
 
+    refreshCollection(sortBy = 'alphabetical') {
+        const collectionContent = document.getElementById('collectionContent');
         if (!collectionContent) return;
 
-        if (Object.keys(GameState.collectedCharacters).length === 0) {
-            collectionContent.innerHTML = '<p>No characters collected yet. Try pulling some!</p>';
-            return;
-        }
+        // Créer un tableau de tous les personnages avec leur statut
+        const allCharacters = DataCache.characters.map(char => {
+            const collected = GameState.collectedCharacters[char.name];
+            return collected || {
+                ...char,
+                count: 0,
+                level: 1,
+                xp: 0,
+                isLocked: true
+            };
+        });
 
-        const sortedCharacters = this.getSortedCharacters(sortBy);
+        const sortedCharacters = this.getSortedCharacters(allCharacters, sortBy);
         collectionContent.innerHTML = sortedCharacters.map(char => this.createCharacterCard(char)).join('');
     },
 
-    getSortedCharacters(sortBy) {
-        const characters = Object.values(GameState.collectedCharacters);
-        
-        switch (sortBy) {
-            case 'alphabetical':
-                return characters.sort((a, b) => a.name.localeCompare(b.name));
-            case 'level':
-                return characters.sort((a, b) => b.level - a.level);
-            case 'rarity':
-                const rarityOrder = {'Legendary': 3, 'Rare': 2, 'Common': 1};
-                return characters.sort((a, b) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);
-            default:
-                return characters;
-        }
-    },
+    getSortedCharacters(characters, sortBy) {
+        return characters.sort((a, b) => {
+            // Toujours trier les débloqués avant les verrouillés en priorité
+            if (a.isLocked && !b.isLocked) return 1;
+            if (!a.isLocked && b.isLocked) return -1;
+            
+            // Si les deux sont dans le même état (débloqués ou verrouillés), appliquer le tri sélectionné
+            switch (sortBy) {
+                case 'alphabetical':
+                    return a.name.localeCompare(b.name);
+                    
+                case 'level':
+                    if (!a.isLocked && !b.isLocked) {
+                        const levelDiff = b.level - a.level;
+                        if (levelDiff === 0) {
+                            const xpDiff = b.count - a.count;
+                            if (xpDiff === 0) {
+                                return a.name.localeCompare(b.name);
+                            }
+                            return xpDiff;
+                        }
+                        return levelDiff;
+                    }
+                    return a.name.localeCompare(b.name);
+                    
+                case 'rarity':
+                    const rarityOrder = {'Legendary': 3, 'Rare': 2, 'Common': 1};
+                    const rarityDiff = rarityOrder[b.rarity] - rarityOrder[a.rarity];
+                    if (rarityDiff !== 0) return rarityDiff;
+                    return a.name.localeCompare(b.name);
+                    
+                default:
+                    return 0;
+            }
+        });
+    }
+    ,
 
     createCharacterCard(character) {
         const nextLevel = character.level + 1;
@@ -473,35 +563,37 @@ const CollectionController = {
         const progress = nextLevelThreshold > currentLevelThreshold 
             ? ((character.count - currentLevelThreshold) / (nextLevelThreshold - currentLevelThreshold)) * 100
             : 100;
-
-            return `
-            <div class="collection-item" data-rarity="${character.rarity}">
+    
+        const lockedClass = character.isLocked ? 'locked' : '';
+        
+        return `
+            <div class="collection-item ${lockedClass}" data-rarity="${character.rarity}">
                 <img src="${character.image}" alt="${character.name}" 
                      onerror="this.src='assets/images/icon/user-icon.png'">
                 <div class="character-info">
                     <h3 class="character-name">${character.name}</h3>
                     <p class="character-rarity">${character.rarity}</p>
-                    <div class="character-stats">
-                        <div class="stat">
-                            <div class="stat-label">Level</div>
-                            <div class="stat-value">${character.level}</div>
+                    ${character.isLocked ? `
+                        <div class="locked-status">Non débloqué</div>
+                    ` : `
+                        <div class="character-stats">
+                            <div class="stat">
+                                <div class="stat-label">Level</div>
+                                <div class="stat-value">${character.level}</div>
+                            </div>
                         </div>
-                        <div class="stat">
-                            <div class="stat-label">Count</div>
-                            <div class="stat-value">${character.count}</div>
+                        <div class="experience-bar-container">
+                            <div class="experience-bar" style="width: ${progress}%"></div>
                         </div>
-                    </div>
-                    <div class="experience-bar-container">
-                        <div class="experience-bar" style="width: ${progress}%"></div>
-                    </div>
-                    <div class="exp-text">
-                        ${character.count - currentLevelThreshold}/${nextLevelThreshold - currentLevelThreshold}
-                        to Level ${nextLevel}
-                    </div>
+                        <div class="exp-text">
+                            XP : ${character.count} (${character.count - currentLevelThreshold}/${nextLevelThreshold - currentLevelThreshold})
+                        </div>
+                    `}
                 </div>
             </div>
         `;
     }
+        
 };
 
 // ====== App Initialization ======

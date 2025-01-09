@@ -262,32 +262,40 @@ nav button img {
 /* Collection Grid */
 #collectionContent {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
     padding: var(--space-md);
+    margin: 0 auto;
 }
 
-/* Character Card Base */
-.collection-item {
-    background: white;
+#collectionContent .collection-item {
+    background: transparent;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: none;
     overflow: hidden;
-    position: relative;
+    margin: 0;
+    min-width: 280px;
+}
+
+/* ====== Collection & Card Styles ====== */
+/* Base Card Style */
+.collection-item {
+    background: transparent;
+    border-radius: 12px;
+    box-shadow: none;
+    overflow: hidden;
+    margin: 0;
+    min-width: 280px;
 }
 
 .collection-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1);
 }
 
-/* Character Image */
 .collection-item img {
     width: 100%;
-    height: 200px;
+    height: 280px;
     object-fit: cover;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 }
 
@@ -310,10 +318,11 @@ nav button img {
     box-shadow: 0 2px 8px rgba(128, 0, 128, 0.2);
 }
 
-/* Character Info */
+/* Style pour les informations des personnages */
 .character-info {
+    background: transparent;
     padding: 15px;
-    background: white;
+    text-align: center;
 }
 
 .character-name {
@@ -321,6 +330,7 @@ nav button img {
     font-weight: bold;
     margin-bottom: 5px;
     color: var(--text-color);
+    text-align: center;
 }
 
 /* Rarity Badge */
@@ -330,7 +340,11 @@ nav button img {
     font-size: 0.85em;
     font-weight: bold;
     margin: 8px 0;
-    display: inline-block;
+    display: block;
+    text-align: center;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .collection-item[data-rarity="Common"] .character-rarity {
@@ -452,37 +466,10 @@ nav button img {
 }
 
 .pull-button-text img {
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     margin-left: 5px;
     vertical-align: middle;
-}
-
-/* Pull Results */
-#pullResult {
-    margin-top: var(--space-md);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: var(--space-sm);
-    padding: var(--space-sm);
-}
-
-#pullResult div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid var(--border-color);
-    padding: var(--space-sm);
-    border-radius: 8px;
-    text-align: center;
-}
-
-#pullResult div img {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    margin-bottom: var(--space-xs);
-    border-radius: 4px;
 }
 
 /* ====== Responsive Design ====== */
@@ -522,4 +509,78 @@ nav button img {
         width: 95%;
         padding: var(--space-sm);
     }
+}
+
+/* History and Pull Results Layout */
+.history-section {
+    margin-top: 40px;
+    padding: 20px;
+}
+
+.history-section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+/* Style pour les cartes de personnages dans Pull Result et History */
+#pullResult,
+.pull-history {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+#pullResult .collection-item img,
+.pull-history .collection-item img {
+    height: 220px;
+}
+
+
+#pullResult .collection-item,
+.pull-history .collection-item {
+    min-width: 180px;
+    width: 180px;
+    margin: 10px;
+}
+
+
+#pullResult .collection-item:hover,
+.pull-history .collection-item:hover {
+    transform: scale(1);
+}
+
+/* Style pour les personnages verrouillés */
+.collection-item.locked {
+    opacity: 0.7;
+    filter: grayscale(100%);
+    position: relative;
+}
+
+.collection-item.locked:hover {
+    opacity: 0.8;
+    transform: scale(1); /* Empêche l'animation de scale sur les cartes verrouillées */
+}
+
+.collection-item.locked img {
+    filter: brightness(0.8);
+}
+
+.locked-status {
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 10px;
+    font-size: 0.9em;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Ajuster l'apparence des cartes verrouillées */
+.collection-item.locked .character-info {
+    opacity: 0.9;
 }
