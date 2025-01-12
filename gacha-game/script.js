@@ -5,7 +5,7 @@ export { GameState, UIUtils, NavigationController, GachaSystem };
 
 // ====== Configuration ======
 const CONFIG = {
-    STARTING_COINS: 5000,
+    STARTING_COINS: 50000,
     RARITY_WEIGHTS: {
         'Common': 70,
         'Rare': 20,

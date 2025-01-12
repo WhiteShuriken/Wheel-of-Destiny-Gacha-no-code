@@ -1,3 +1,6 @@
-1 : Regler Error dans "Dernières aquisition"
-2 : Ajouter un compte à rebours jusqu'à la prochaine réinitialisation
-3 : BIEN PLUS ! 
+Regler Error dans "Dernières aquisition"
+Regler Error quand change de "Sort By" 
+Ajouter un compte à rebours jusqu'à la prochaine réinitialisation
+BIEN PLUS ! 
+
+node projectStructure.js
