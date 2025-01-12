@@ -9,7 +9,7 @@ function generateProjectStructure(startPath) {
         path: startPath,
         children: [],
         metadata: {
-            totalFiles: 0,
+            totalFiles: 0, 
             fileTypes: {},
             lastUpdate: new Date().toISOString()
         }

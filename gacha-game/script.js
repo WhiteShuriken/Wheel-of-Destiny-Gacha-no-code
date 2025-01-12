@@ -13,7 +13,7 @@ const CONFIG = {
     },
     LEVEL_THRESHOLDS: [0, 5, 15, 40, 100]
 };
-
+ 
 // ====== Data Cache Manager ======
 const DataCache = {
     characters: null,

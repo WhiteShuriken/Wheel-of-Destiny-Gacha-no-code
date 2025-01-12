@@ -1,7 +1,7 @@
 # Wheel of Destiny Gacha
 
 ## Description
-Wheel of Destiny Gacha est un jeu de tirage ("gacha game") simple où les utilisateurs peuvent dépenser des pièces pour obtenir des personnages de différentes raretés. Le projet utilise HTML, CSS, et JavaScript pour offrir une expérience utilisateur interactive.
+Wheel of Destiny Gacha est un jeu de tirage ("gacha game") simple où les utilisateurs peuvent dépenser des pièces pour obtenir des personnages de différentes raretés. Le projet utilise HTML, CSS, et JavaScript pour offrir une expérience utilisateur interactive. 
 
 ## Fonctionnalités
 - **Système de Packs** :

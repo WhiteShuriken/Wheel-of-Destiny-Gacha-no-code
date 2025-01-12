@@ -16,3 +16,4 @@
   { "name": "Loic", "image": "assets/images/hero/Loic.jpg", "packId": ["genesis"], "rarity": "Common" },
   { "name": "Sabrina", "image": "assets/images/hero/Sabrina.jpg", "packId": ["apocalypse", "genesis"], "rarity": "Legendary" }
 ]
+ 

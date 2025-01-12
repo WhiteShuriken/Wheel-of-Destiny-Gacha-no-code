@@ -81,7 +81,7 @@ const HomeView = {
                     </button>
                 </div>
             `;
-        }
+        } 
 
         return recentPulls.map(character => `
             <div class="collection-item" data-rarity="${character.rarity}">
